@@ -1,63 +1,47 @@
-import React, { useState } from "react";
+import React from "react";
 import { Drawer } from "@material-ui/core";
 import styled from "styled-components";
 import COLORS from "../assets/Colors";
 import {
   PrimaryOutlinedCTAButton,
-  PrimaryCTAButton
+  PrimaryCTAButton,
 } from "../common/FormInput";
-import theme from "../assets/theme";
 import CustomSelect from "../internel/CustomSelect";
 import { NameType } from "../Helpers/constants";
 import { Formik } from "formik";
 import FormField from "../common/FormField";
-import { FormLabel } from "@material-ui/core";
+
 
 export default function NameSegment({ open, setOpen }) {
-  const [name, setName] = useState("");
-  const [segName, setSegName] = useState("");
-
   const onFormSubmit = values => {
-    //   onSubmit(postData, modal?.data);
     console.log("values", values);
+
+    fetch("https://webhook.site/2f4843d8-78fa-47e1-affb-b0da6519efeb", {
+      method: "POST",
+      body: JSON.stringify(values)
+    });
   };
 
-  const handleDeleteVideo = (index, tutorialUrl, setFieldValue) => {
-    if (tutorialUrl?.length) {
-      const filtered = tutorialUrl.filter((v, idx) => idx !== index);
-      setFieldValue("tutorialUrl", filtered);
-    }
-  };
+  function handleRemove(schema, index, setFieldValue) {
+    let returnData = schema.filter((schema, id) => id !== index);
+    setFieldValue("schema", returnData);
+  }
 
-  const initialState = {
-    first_name: "",
-    last_name: ""
-  };
-
-  const [formValues, setFormValues] = useState([
-    { first_name: "", last_name: "" }
-  ]);
-
-  const handleChangeForm = (i, e) => {
-    let newFormValues = [...formValues];
-    newFormValues[i][e.target.name] = e.target.value;
-    setFormValues(newFormValues);
-  };
-
-  const addFormFields = () => {
-    setFormValues([...formValues, { first_name: "", last_name: "" }]);
-  };
-
-  const removeFormFields = i => {
-    let newFormValues = [...formValues];
-    newFormValues.splice(i, 1);
-    setFormValues(newFormValues);
-  };
-
-  const handleSubmit = event => {
-    event.preventDefault();
-    alert(JSON.stringify(formValues));
-  };
+  function addSection(setFieldValue, schema) {
+    let newSections = [
+      ...schema,
+      {
+        first_name: "",
+        last_name: "",
+        gender: "",
+        age: "",
+        accout_name: "",
+        city: "",
+        state: ""
+      }
+    ];
+    setFieldValue("schema", newSections);
+  }
 
   return (
     <Drawer anchor="right" open={open}>
@@ -72,10 +56,21 @@ export default function NameSegment({ open, setOpen }) {
         <AgentFormContainer>
           <Formik
             initialValues={{
-              segment_name: name,
-              schema: [{ first_name: "", last_name: "" }]
+              segment_name: "",
+              // NameType
+              schema: [
+                {
+                  first_name: "",
+                  last_name: "",
+                  gender: "",
+                  age: "",
+                  accout_name: "",
+                  city: "",
+                  state: ""
+                }
+              ]
+              // schema: [{ first_name: "", last_name: "" }]
             }}
-            // validationSchema={AddZoomLinkValidation}
             onSubmit={onFormSubmit}
             validateOnBlur
             validateOnChange
@@ -90,52 +85,109 @@ export default function NameSegment({ open, setOpen }) {
               setFieldValue
             }) => (
               <FormContainer onSubmit={handleSubmit}>
-                <div className="link-container">
-                  <FormField
-                    input={{
-                      name: "segment_name",
-                      label: "Enter the Name of the Segment",
-                      type: "text",
-                      required: true,
-                      placeholder: "Name of the Segment"
-                    }}
-                    {...{
-                      touched,
-                      errors,
-                      values,
-                      handleChange,
-                      handleBlur
-                    }}
-                  />
+                <div>
+                  <Flex>
+                    <FormField
+                      input={{
+                        name: "segment_name",
+                        label: "Enter the Name of the Segment",
+                        type: "text",
+                        required: true,
+                        placeholder: "Name of the Segment"
+                      }}
+                      {...{
+                        touched,
+                        errors,
+                        values,
+                        handleChange,
+                        handleBlur
+                      }}
+                    />
+                  </Flex>
                   <Label style={{ lineHeight: 5.7 }}>
                     To Save Your Segment. you need to add the schemas to build
                     the query
                   </Label>
-                  {formValues.map((element, index) => (
+                  {values.schema.map((element, index) => (
                     <div style={{ marginBottom: "28px" }} key={index}>
-                      {console.log("element", element)}
                       <CustomSelect
                         menuItemValues={NameType}
-                        value={
-                          element.first_name
-                            ? element.first_name
-                            : element?.last_name
-                        }
-                        onChange={e => handleChangeForm(index, e)}
-                        name={element.first_name ? "first_name" : "last_name"}
+                        value={element?.first_name}
+                        name={`schema[${index}].first_name`}
+                        id={`schema[${index}].first_name`}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        style={{ marginTop: 6, marginBottom: 20 }}
                       />
-                      {index ? (
+                      <CustomSelect
+                        menuItemValues={NameType}
+                        value={element.last_name}
+                        name={`schema[${index}].last_name`}
+                        id={`schema[${index}].last_name`}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        style={{ marginTop: 6, marginBottom: 20 }}
+                      />
+                      <CustomSelect
+                        menuItemValues={NameType}
+                        value={element.gender}
+                        name={`schema[${index}].gender`}
+                        id={`schema[${index}].gender`}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        style={{ marginTop: 6, marginBottom: 20 }}
+                      />
+                      <CustomSelect
+                        menuItemValues={NameType}
+                        value={element.age}
+                        name={`schema[${index}].age`}
+                        id={`schema[${index}].age`}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        style={{ marginTop: 6, marginBottom: 20 }}
+                      />
+                      <CustomSelect
+                        menuItemValues={NameType}
+                        value={element.accout_name}
+                        name={`schema[${index}].accout_name`}
+                        id={`schema[${index}].accout_name`}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        style={{ marginTop: 6, marginBottom: 20 }}
+                      />
+                      <CustomSelect
+                        menuItemValues={NameType}
+                        value={element.city}
+                        name={`schema[${index}].city`}
+                        id={`schema[${index}].city`}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        style={{ marginTop: 6, marginBottom: 20 }}
+                      />
+                      <CustomSelect
+                        menuItemValues={NameType}
+                        value={element.state}
+                        name={`schema[${index}].state`}
+                        id={`schema[${index}].state`}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        style={{ marginTop: 6, marginBottom: 20 }}
+                      />
+                      {values.schema.length > 1 && (
                         <DeleteIcon
                           src={require("../assets/images/removeIcon.svg")}
-                          onClick={() => removeFormFields(index)}
+                          alt="remove"
+                          onClick={() =>
+                            handleRemove(values.schema, index, setFieldValue)
+                          }
                         />
-                      ) : null}
+                      )}
                     </div>
                   ))}
                   <button
                     className="button add"
                     type="button"
-                    onClick={() => addFormFields()}
+                    onClick={() => addSection(setFieldValue, values.schema)}
                   >
                     + Add New Schema
                   </button>
@@ -178,19 +230,6 @@ const ButtonContainer = styled.div`
   margin-top: 150px;
 `;
 
-export const Row = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  @media ${theme?.breakpoints?.sm_up} {
-    width: auto;
-  }
-`;
-
-const StyledForm = styled.form`
-  width: 100%;
-`;
-
 const Label = styled.div`
   font-size: 10px;
   line-height: 3.7;
@@ -205,20 +244,11 @@ export const BasicDetailsLabel = styled.div`
   text-transform: capitalize;
 `;
 
-const FileUploadContainer = styled.div`
-  display: flex;
-`;
-
 export const DeleteIcon = styled.img`
   margin-left: 20px;
   user-select: none;
   object-fit: contain;
   cursor: pointer;
-`;
-
-const FileUploadBox = styled.div`
-  display: flex;
-  flex-direction: column;
 `;
 
 const HeadingContainer = styled.div`
@@ -240,6 +270,12 @@ const CloseModal = styled.img`
   cursor: pointer;
   position: absolute;
   left: 15px;
+`;
+
+const Flex = styled.div`
+  display: flex;
+  justify-content: space-between;
+  }
 `;
 
 const Heading = styled.h3`

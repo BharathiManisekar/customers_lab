@@ -7,7 +7,7 @@ export const StyledSelectFormControl = withStyles({
   ...StyledInput,
   root: {
     ...StyledInput.root,
-    width: "80%",
+    width: "60%",
   },
 })(FormControl);
 
